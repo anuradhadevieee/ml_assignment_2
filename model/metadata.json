@@ -1,0 +1,89 @@
+{
+  "dataset": "Breast Cancer Wisconsin (Diagnostic)",
+  "source": "UCI Machine Learning Repository",
+  "target_definition": "1 = malignant, 0 = benign",
+  "feature_names": [
+    "mean radius",
+    "mean texture",
+    "mean perimeter",
+    "mean area",
+    "mean smoothness",
+    "mean compactness",
+    "mean concavity",
+    "mean concave points",
+    "mean symmetry",
+    "mean fractal dimension",
+    "radius error",
+    "texture error",
+    "perimeter error",
+    "area error",
+    "smoothness error",
+    "compactness error",
+    "concavity error",
+    "concave points error",
+    "symmetry error",
+    "fractal dimension error",
+    "worst radius",
+    "worst texture",
+    "worst perimeter",
+    "worst area",
+    "worst smoothness",
+    "worst compactness",
+    "worst concavity",
+    "worst concave points",
+    "worst symmetry",
+    "worst fractal dimension"
+  ],
+  "test_rows": 114,
+  "train_rows": 455,
+  "random_state": 42,
+  "test_size": 0.2,
+  "overall_winner": "Random Forest",
+  "results": [
+    {
+      "Model": "Logistic Regression",
+      "Accuracy": 0.9649122807017544,
+      "AUC": 0.996031746031746,
+      "Precision": 0.975,
+      "Recall": 0.9285714285714286,
+      "F1": 0.9512195121951219,
+      "MCC": 0.9245181185940877
+    },
+    {
+      "Model": "Decision Tree",
+      "Accuracy": 0.9210526315789473,
+      "AUC": 0.9447751322751322,
+      "Precision": 0.9459459459459459,
+      "Recall": 0.8333333333333334,
+      "F1": 0.8860759493670886,
+      "MCC": 0.8299275201966065
+    },
+    {
+      "Model": "kNN",
+      "Accuracy": 0.956140350877193,
+      "AUC": 0.982308201058201,
+      "Precision": 0.9743589743589743,
+      "Recall": 0.9047619047619048,
+      "F1": 0.9382716049382716,
+      "MCC": 0.9058238738943076
+    },
+    {
+      "Model": "Naive Bayes",
+      "Accuracy": 0.9385964912280702,
+      "AUC": 0.9933862433862434,
+      "Precision": 1.0,
+      "Recall": 0.8333333333333334,
+      "F1": 0.9090909090909091,
+      "MCC": 0.8714893406611902
+    },
+    {
+      "Model": "Random Forest",
+      "Accuracy": 0.9736842105263158,
+      "AUC": 0.9943783068783069,
+      "Precision": 1.0,
+      "Recall": 0.9285714285714286,
+      "F1": 0.9629629629629629,
+      "MCC": 0.9441549509633318
+    }
+  ]
+}
