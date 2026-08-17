@@ -1,0 +1,38 @@
+Training: Logistic Regression
+{'Model': 'Logistic Regression', 'Accuracy': 0.9649122807017544, 'AUC': 0.996031746031746, 'Precision': 0.975, 'Recall': 0.9285714285714286, 'F1': 0.9512195121951219, 'MCC': 0.9245181185940877}
+Confusion Matrix:
+[[71  1]
+ [ 3 39]]
+Training: Decision Tree
+{'Model': 'Decision Tree', 'Accuracy': 0.9210526315789473, 'AUC': 0.9447751322751322, 'Precision': 0.9459459459459459, 'Recall': 0.8333333333333334, 'F1': 0.8860759493670886, 'MCC': 0.8299275201966065}
+Confusion Matrix:
+[[70  2]
+ [ 7 35]]
+Training: kNN
+{'Model': 'kNN', 'Accuracy': 0.956140350877193, 'AUC': 0.982308201058201, 'Precision': 0.9743589743589743, 'Recall': 0.9047619047619048, 'F1': 0.9382716049382716, 'MCC': 0.9058238738943076}
+Confusion Matrix:
+[[71  1]
+ [ 4 38]]
+Training: Naive Bayes
+{'Model': 'Naive Bayes', 'Accuracy': 0.9385964912280702, 'AUC': 0.9933862433862434, 'Precision': 1.0, 'Recall': 0.8333333333333334, 'F1': 0.9090909090909091, 'MCC': 0.8714893406611902}
+Confusion Matrix:
+[[72  0]
+ [ 7 35]]
+Training: Random Forest
+{'Model': 'Random Forest', 'Accuracy': 0.9736842105263158, 'AUC': 0.9943783068783069, 'Precision': 1.0, 'Recall': 0.9285714285714286, 'F1': 0.9629629629629629, 'MCC': 0.9441549509633318}
+Confusion Matrix:
+[[72  0]
+ [ 3 39]]
+
+Dataset shape: (569, 32)
+Train/Test: (455, 30) (114, 30)
+
+Final model comparison:
+              Model  Accuracy    AUC  Precision  Recall     F1    MCC  Mean Score
+Logistic Regression    0.9649 0.9960     0.9750  0.9286 0.9512 0.9245      0.9567
+      Decision Tree    0.9211 0.9448     0.9459  0.8333 0.8861 0.8299      0.8935
+                kNN    0.9561 0.9823     0.9744  0.9048 0.9383 0.9058      0.9436
+        Naive Bayes    0.9386 0.9934     1.0000  0.8333 0.9091 0.8715      0.9243
+      Random Forest    0.9737 0.9944     1.0000  0.9286 0.9630 0.9442      0.9673
+
+Overall winner by mean of six metrics: Random Forest

@@ -1,124 +1,79 @@
-import json
 from pathlib import Path
-
 import joblib
-import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
-from sklearn.metrics import (
-    accuracy_score,
-    classification_report,
-    confusion_matrix,
-    f1_score,
-    matthews_corrcoef,
-    precision_score,
-    recall_score,
-    roc_auc_score,
-)
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score, matthews_corrcoef, precision_score, recall_score, roc_auc_score
 
 BASE = Path(__file__).resolve().parent
-MODEL_DIR = BASE / "model"
-
+MODEL_DIR = BASE / 'model'
 MODEL_FILES = {
-    "Logistic Regression": MODEL_DIR / "logistic_regression.joblib",
-    "Decision Tree": MODEL_DIR / "decision_tree.joblib",
-    "kNN": MODEL_DIR / "knn.joblib",
-    "Naive Bayes": MODEL_DIR / "naive_bayes.joblib",
-    "Random Forest": MODEL_DIR / "random_forest.joblib",
+    'Logistic Regression': 'logistic_regression.joblib',
+    'Decision Tree': 'decision_tree.joblib',
+    'kNN': 'knn.joblib',
+    'Naive Bayes': 'naive_bayes.joblib',
+    'Random Forest': 'random_forest.joblib',
 }
+FEATURE_NAMES = [
+    'radius_mean','texture_mean','perimeter_mean','area_mean','smoothness_mean','compactness_mean','concavity_mean','concave_points_mean','symmetry_mean','fractal_dimension_mean',
+    'radius_se','texture_se','perimeter_se','area_se','smoothness_se','compactness_se','concavity_se','concave_points_se','symmetry_se','fractal_dimension_se',
+    'radius_worst','texture_worst','perimeter_worst','area_worst','smoothness_worst','compactness_worst','concavity_worst','concave_points_worst','symmetry_worst','fractal_dimension_worst'
+]
 
-with open(MODEL_DIR / "metadata.json", "r", encoding="utf-8") as f:
-    metadata = json.load(f)
+st.set_page_config(page_title='ML Classification Model Comparison', page_icon='🧠', layout='wide')
+st.title('🧠 Machine Learning Classification Models')
+st.subheader('Breast Cancer Wisconsin (Diagnostic) Dataset')
+st.write('Upload test data, select a trained model, and view the required evaluation metrics.')
 
-st.set_page_config(page_title="ML Classification Model Comparison", page_icon="🤖", layout="wide")
-
-st.title("🤖 Machine Learning Classification Model Comparison")
-st.write(
-    "Upload the test CSV generated for Assignment–2, select a classification model, "
-    "and view its evaluation metrics and confusion matrix."
-)
-
-st.sidebar.header("Model Selection")
-selected_model = st.sidebar.selectbox("Choose a model", list(MODEL_FILES.keys()))
-
-uploaded_file = st.file_uploader("Upload test_data.csv", type=["csv"])
-
-if uploaded_file is None:
-    st.info("Please upload the test_data.csv file to evaluate the selected model.")
-    st.subheader("Dataset used")
-    st.write("Breast Cancer Wisconsin (Diagnostic) — UCI Machine Learning Repository")
-    st.write("569 instances, 30 numerical features, binary target")
-    st.write("Target used in this project: 1 = malignant, 0 = benign")
+uploaded_file = st.file_uploader('Upload test data (CSV)', type=['csv'])
+default_file = BASE / 'test_data.csv'
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+elif default_file.exists():
+    st.info('Using the project test_data.csv. You can upload another test CSV above.')
+    df = pd.read_csv(default_file)
+else:
+    st.warning('Please upload test_data.csv.')
     st.stop()
 
-try:
-    test_df = pd.read_csv(uploaded_file)
-except Exception as exc:
-    st.error(f"Could not read the CSV file: {exc}")
-    st.stop()
-
-required_columns = metadata["feature_names"] + ["target"]
-missing = [c for c in required_columns if c not in test_df.columns]
-
+required = FEATURE_NAMES + ['target']
+missing = [c for c in required if c not in df.columns]
 if missing:
-    st.error("The uploaded file is missing required columns.")
-    st.write(missing)
+    st.error('Missing required columns: ' + ', '.join(missing))
     st.stop()
 
-X_test = test_df[metadata["feature_names"]]
-y_test = test_df["target"].astype(int)
+X_test = df[FEATURE_NAMES]
+y_test = df['target'].astype(int)
+selected_model = st.selectbox('Select Machine Learning Model', list(MODEL_FILES.keys()))
+model_path = MODEL_DIR / MODEL_FILES[selected_model]
+if not model_path.exists():
+    st.error(f'Trained model not found: {model_path}. Run train_models.py first.')
+    st.stop()
 
-model = joblib.load(MODEL_FILES[selected_model])
-y_pred = model.predict(X_test)
-y_proba = model.predict_proba(X_test)[:, 1]
+model = joblib.load(model_path)
+pred = model.predict(X_test)
+proba = model.predict_proba(X_test)[:, 1]
+accuracy = accuracy_score(y_test, pred)
+auc = roc_auc_score(y_test, proba)
+precision = precision_score(y_test, pred, zero_division=0)
+recall = recall_score(y_test, pred, zero_division=0)
+f1 = f1_score(y_test, pred, zero_division=0)
+mcc = matthews_corrcoef(y_test, pred)
 
-metrics = {
-    "Accuracy": accuracy_score(y_test, y_pred),
-    "AUC": roc_auc_score(y_test, y_proba),
-    "Precision": precision_score(y_test, y_pred, zero_division=0),
-    "Recall": recall_score(y_test, y_pred, zero_division=0),
-    "F1 Score": f1_score(y_test, y_pred, zero_division=0),
-    "MCC": matthews_corrcoef(y_test, y_pred),
-}
+st.markdown('### Evaluation Metrics')
+c1,c2,c3 = st.columns(3)
+c4,c5,c6 = st.columns(3)
+c1.metric('Accuracy', f'{accuracy:.4f}')
+c2.metric('AUC', f'{auc:.4f}')
+c3.metric('Precision', f'{precision:.4f}')
+c4.metric('Recall', f'{recall:.4f}')
+c5.metric('F1 Score', f'{f1:.4f}')
+c6.metric('MCC', f'{mcc:.4f}')
 
-st.subheader(f"Results — {selected_model}")
-cols = st.columns(6)
-for col, (name, value) in zip(cols, metrics.items()):
-    col.metric(name, f"{value:.4f}")
-
-left, right = st.columns(2)
-
-with left:
-    st.subheader("Confusion Matrix")
-    cm = confusion_matrix(y_test, y_pred, labels=[0, 1])
-    fig, ax = plt.subplots()
-    ax.imshow(cm)
-    ax.set_xticks([0, 1], labels=["Benign (0)", "Malignant (1)"])
-    ax.set_yticks([0, 1], labels=["Benign (0)", "Malignant (1)"])
-    ax.set_xlabel("Predicted")
-    ax.set_ylabel("Actual")
-    ax.set_title(selected_model)
-    for i in range(2):
-        for j in range(2):
-            ax.text(j, i, cm[i, j], ha="center", va="center")
-    fig.tight_layout()
-    st.pyplot(fig)
-    plt.close(fig)
-
-with right:
-    st.subheader("Classification Report")
-    report = classification_report(
-        y_test,
-        y_pred,
-        target_names=["Benign", "Malignant"],
-        output_dict=True,
-        zero_division=0,
-    )
-    st.dataframe(pd.DataFrame(report).T.round(4), use_container_width=True)
-
-st.subheader("All Model Comparison")
-comparison = pd.DataFrame(metadata["results"]).set_index("Model")
-st.dataframe(comparison.style.format("{:.4f}"), use_container_width=True)
-st.success(f"Overall winner by mean of the six required metrics: {metadata['overall_winner']}")
-
-st.caption("For academic assignment use only. This application demonstrates machine-learning classification workflow and is not a medical diagnostic tool.")
+st.markdown('### Confusion Matrix')
+cm = confusion_matrix(y_test, pred)
+st.dataframe(pd.DataFrame(cm, index=['Actual Benign','Actual Malignant'], columns=['Predicted Benign','Predicted Malignant']), use_container_width=True)
+st.markdown('### Classification Report')
+report = classification_report(y_test, pred, target_names=['Benign','Malignant'], output_dict=True, zero_division=0)
+st.dataframe(pd.DataFrame(report).transpose(), use_container_width=True)
+st.markdown('### Test Data Preview')
+st.dataframe(df.head(10), use_container_width=True)
