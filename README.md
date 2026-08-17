@@ -29,7 +29,7 @@ Source: https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnosti
 
 ## c. GitHub Repository Link
 
-**GitHub Repository:** `ADD YOUR GITHUB REPOSITORY LINK HERE`
+**GitHub Repository:** `https://github.com/anuradhadevieee/ml_assignment_2`
 
 ## Streamlit App Link
 
